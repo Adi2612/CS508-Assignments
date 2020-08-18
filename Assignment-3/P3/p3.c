@@ -84,8 +84,15 @@ int main(int argc, char *argv[]){
   }
   int *histo1 = allocate_histo_32();
   int *histo2 = allocate_histo_32();
-  histo_vector(img1, width1, height1, histo1);
-  histo_vector(img2, width2, height2, histo2);
+  int rank;
+  #pragma omp parallel num_threads(2)private(rank) 
+  {
+    rank = omp_get_thread_num();
+    if(rank == 0)
+      histo_vector(img1, width1, height1, histo1);
+    else
+      histo_vector(img2, width2, height2, histo2);
+  }
 
   // hellinger distance
   float hd = 0;
